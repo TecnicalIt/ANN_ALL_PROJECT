@@ -1,0 +1,43 @@
+! pip install tensorflow
+! pip install karas matplotlib numpy mnist
+from google.colab import drive
+drive.mount('/content/drive')
+
+#important libarys
+import numpy as np
+import matplotlib.pyplot as plt
+import keras
+import tensorflow as tf
+from tensorflow import keras
+from keras.layers import Dense
+from keras.utils import to_categorical
+import seaborn
+
+(xtrain,ytrain),(xtest,ytest) = keras.datasets.mnist.load_data()
+xtrain[0].shape
+plt.matshow(xtest[1])
+#normalization
+xtest = xtest/255
+xtrain= xtrain/255
+xtrain = xtrain.reshape(-1,784)
+xtest = xtest.reshape(-1,784)
+model = keras.Sequential()
+model.add(Dense(64 , activation = 'relu' , input_dim = 784)) #input layer
+model.add(Dense(64 , activation = 'relu' ))# hidden layer
+model.add(Dense(10 , activation = 'softmax' ))#out put layer
+model.compile(
+    optimizer = "adam",
+    loss = "categorical_crossentropy",
+    metrics = ["accuracy"]
+)
+model.fit(xtrain,to_categorical(ytrain),
+epochs = 10, batch_size=32)
+#evaluate the model
+model.evaluate(xtest,to_categorical(ytest))
+pred = model.predict(xtest)
+np.argmax(pred[1])
+pred = model.predict(xtest)
+predt = [np.argmax(i) for i in pred]
+con_mat = tf.math.confusion_matrix(labels = ytest,predictions=predt)
+plt.figure(figsize=(10,7))
+seaborn.heatmap(con_mat,annot=True,fmt = "d")
